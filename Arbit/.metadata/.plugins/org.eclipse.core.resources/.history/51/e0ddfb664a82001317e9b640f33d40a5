@@ -1,0 +1,24 @@
+import java.awt.Image;
+
+
+public class Images {
+	public static Image bg = Functions.loadImage("http://myrighttoplay.com/1337file/arbitTest/ArbitRun/Data/createBg.png");
+	public static Image arrowBtn = Functions.loadImage("http://myrighttoplay.com/1337file/arbitTest/ArbitRun/Data/arrow_btn.png");
+	public static Image arrowBtnGlow = Functions.loadImage("http://myrighttoplay.com/1337file/arbitTest/ArbitRun/Data/arrow_btn_glow.png");
+	public static Image saveBtnReg = Functions.loadImage("http://myrighttoplay.com/1337file/arbitTest/ArbitRun/Data/save_btn.png");
+	public static Image saveBtnGlow = Functions.loadImage("http://myrighttoplay.com/1337file/arbitTest/ArbitRun/Data/save_btn_glow.png");
+	public static Image loadBtnGlow = Functions.loadImage("http://myrighttoplay.com/1337file/arbitTest/ArbitRun/Data/load_glow.png");
+	public static Image loadBtnReg = Functions.loadImage("http://myrighttoplay.com/1337file/arbitTest/ArbitRun/Data/load.png");
+	public static Image genBtnReg = Functions.loadImage("http://myrighttoplay.com/1337file/arbitTest/ArbitRun/Data/generate_btn.png");
+	public static Image genBtnGlow = Functions.loadImage("http://myrighttoplay.com/1337file/arbitTest/ArbitRun/Data/generate_btn_glow.png");
+	public static Image newBtnReg = Functions.loadImage("http://myrighttoplay.com/1337file/arbitTest/ArbitRun/Data/new_btn.png");
+	public static Image newBtnGlow = Functions.loadImage("http://myrighttoplay.com/1337file/arbitTest/ArbitRun/Data/new_btn_glow.png");
+	public static Image postBtnReg = Functions.loadImage("http://myrighttoplay.com/1337file/arbitTest/ArbitRun/Data/post_it_btn.png");
+	public static Image postBtnGlow = Functions.loadImage("http://myrighttoplay.com/1337file/arbitTest/ArbitRun/Data/post_it_btn_glow.png");
+	public static Image exitBtnReg = Functions.loadImage("http://myrighttoplay.com/1337file/arbitTest/ArbitRun/Data/exit_btn.png");
+	public static Image exitBtnGlow = Functions.loadImage("http://myrighttoplay.com/1337file/arbitTest/ArbitRun/Data/exit_btn_glow.png");
+	public static Image toolbarDropShadow = Functions.loadImage("http://myrighttoplay.com/1337file/arbitTest/ArbitRun/Data/longDropShaddow.png");
+	public static Image abilityIcon = Functions.loadImage("http://myrighttoplay.com/1337file/arbitTest/ArbitRun/Data/abilityIcon.png");
+	public static Image abilityIconGlow = Functions.loadImage("http://myrighttoplay.com/1337file/arbitTest/ArbitRun/Data/abilityIconGlow.png");
+	
+}

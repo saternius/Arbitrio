@@ -1,0 +1,235 @@
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.Rectangle;
+import java.awt.RenderingHints;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+
+
+
+public class PlayGame {
+	GameCanvas _root;
+	private String UpdateString1="Recent Updates: This is the first BETA version of Arbitrio.";
+	private String UpdateString2="Feel free to test and provide feedback.";
+	@SuppressWarnings("unused")
+	private String UpdateString3="";
+	public Font regFont;
+	public Font boldFont;
+	private String[] subjects = {"Featured","Hot","High Rating","Newest","Contriversal"};
+	private int focus = 0;
+	private Rectangle[] hitBoxes = new Rectangle[9];
+	
+	private Image layout = Images.play_game_layout;
+	private Image nsfwFilter = Images.selected2;
+	
+	private Image arrowLeft = Images.arrow_left;
+	private Image arrowRight = Images.arrow_right;
+	private Image arrowLeftF = Images.arrow_left_faded;
+	private Image arrowRightF = Images.arrow_right_faded;
+	
+	private Image rightArrow = arrowRightF;
+	private Image leftArrow = arrowLeftF;
+	
+	
+	boolean nsfwEnabled=false;
+	private chatButtons[] chatButtons = new chatButtons[10];
+	private int[] dist={0,85,135,240,310};
+	private boolean light=true;
+	private int chatY=110;
+	@SuppressWarnings("unused")
+	private mySqlFetcher sqlFetch;
+	Game game;
+	private int page = 0;
+	private boolean next = false;
+
+	
+	StorySelection[] ss = new StorySelection[10];
+	private int iFocus;
+	public Comments comments;
+	public PlayGame(GameCanvas gameCanvas){
+		this._root=gameCanvas;
+		
+	
+			this.regFont = Images.biko_reg;
+			this.regFont = this.regFont.deriveFont(Font.PLAIN, 13f);
+			this.boldFont = Images.biko_bold;
+			this.boldFont = this.boldFont.deriveFont(Font.PLAIN, 13f);
+    	
+		hitBoxes[0]=new Rectangle(12,69,77,18);
+		hitBoxes[1]=new Rectangle(99,69,39,18);
+		hitBoxes[2]=new Rectangle(151,69,87,18);
+		hitBoxes[3]=new Rectangle(258,69,60,18);
+		hitBoxes[4]=new Rectangle(327,69,90,18);
+		hitBoxes[5]=new Rectangle(441,14,45,45);
+		hitBoxes[6]=new Rectangle(37,555,23,23);
+		hitBoxes[7]=new Rectangle(424,552,33,24);
+		hitBoxes[8]=new Rectangle(461,551,37,24);
+
+		for(int i=0;i<chatButtons.length;i++){
+			chatButtons[i]=new chatButtons(this,light,chatY);
+			light=!light;
+			chatY+=42;
+		}
+		sqlFetch = new mySqlFetcher(0,page,false,this);
+		
+	}
+	
+	public void generateFetch(int length, String[] ids, String[] authors, String[] titles, String[] dates, String[] views, String[] nsfws, String[] comments, String[] rating) {
+		int yPos=110;
+		ss = new StorySelection[10];
+		chatY=110;
+		for(int i=0;i<chatButtons.length;i++){
+			chatButtons[i]=new chatButtons(this,light,chatY);
+			light=!light;
+			chatY+=42;
+		}
+		System.out.println("ze length is"+length);
+		if(length == 10){
+			rightArrow=arrowRight;
+			next=true;
+		}else{
+			rightArrow=arrowRightF;
+			next=false;
+		}
+		if(page<9){
+			leftArrow=arrowLeftF;
+		}else{
+			leftArrow=arrowLeft;
+		}
+		for(int i=0;i<length;i++){
+			ss[i]= new StorySelection(ids[i],titles[i],views[i],dates[i],rating[i],authors[i],nsfws[i],yPos,this);
+			chatButtons[i].visible=true;
+			chatButtons[i].id = ids[i];
+			try{
+			chatButtons[i].comments=comments[i];
+			}catch(Exception e){}
+			yPos+=42;
+		}
+	}
+
+	public void draw(Graphics stage){
+		if(stage instanceof Graphics2D){
+			Graphics2D g2 = (Graphics2D)stage;
+			g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+		}
+		 stage.drawImage(layout,0,0,null);
+		 stage.setColor(new Color(153,153,153));
+		 stage.setFont(regFont);
+		 stage.drawString(UpdateString1,16,24);
+		 stage.drawString(UpdateString2,16,40);
+		 
+		 for(int i=0; i<subjects.length;i++){
+			 Font font = regFont;
+			 if(focus==i){
+				 font = boldFont;
+			 }
+			 font = font.deriveFont(Font.PLAIN, 17f);
+			 stage.setFont(font);
+			 stage.drawString(subjects[i], 17+dist[i], 83);
+		 }
+		 if(nsfwEnabled){
+			 stage.drawImage(nsfwFilter,38,553,null);
+		 }
+		 for(chatButtons cb:chatButtons){
+			 cb.draw(stage);
+		 }
+		 for(StorySelection stories:ss){
+			 if(stories!=null){
+			 stories.draw(stage);
+			 }
+		 }
+		 
+		 stage.drawImage(leftArrow,430,550,null);
+		 stage.drawImage(rightArrow,471,550,null);
+		 
+		 if(comments!=null){
+			 comments.draw(stage);
+		 }
+		 if(game!=null){
+			 game.draw(stage);
+		 }
+		
+		 
+	}
+
+	public void mouseClicked(MouseEvent m) {
+		int mouseX=m.getX();
+		int mouseY=m.getY();
+		if(comments!=null){
+			comments.mouseClicked(m);
+		}else{
+		for(int i=0; i<hitBoxes.length;i++){
+			if(mouseX>hitBoxes[i].x && mouseX<hitBoxes[i].x+hitBoxes[i].width && mouseY>hitBoxes[i].y && mouseY<hitBoxes[i].y+hitBoxes[i].height){
+				trace(Integer.toString(i));
+				if(i<5){
+					focus=i;
+				}
+				if(i==6){
+					page=0;
+					nsfwEnabled=!nsfwEnabled;
+					ss= new StorySelection[10];
+					sqlFetch = new mySqlFetcher(iFocus,0,nsfwEnabled,this);
+				}
+				if(i==5){
+					_root.menu.rise=true;
+				}
+				if(i==7 && page>=9){
+					//goBack
+					page-=9;
+					sqlFetch = new mySqlFetcher(iFocus,page,nsfwEnabled,this);
+					if(page<9){
+						leftArrow=arrowLeftF;
+					}
+				}
+				if(i==8 && next){
+					//goNext
+					page+=9;
+					leftArrow=arrowLeft;
+					sqlFetch = new mySqlFetcher(iFocus,page,nsfwEnabled,this);
+				}
+				if(i<6){
+					page=0;
+					iFocus = i;
+					trace("change catagory");
+					sqlFetch = new mySqlFetcher(i,0,nsfwEnabled,this);
+				}
+				
+			}
+		}
+		for(int i=0; i<chatButtons.length;i++){
+			chatButtons[i].checkClicked(m);
+		}
+		for(int i=0;i<ss.length;i++){
+			if(ss[i]!=null){
+			ss[i].checkClicked(m);
+			}
+		}
+		}
+	}
+
+	private void trace(String string) {
+		System.out.println(string);
+	}
+
+	public void makeGame(Game game) {
+		// TODO Auto-generated method stub
+		this.game=game;
+	}
+
+	public void removeGame() {
+		// TODO Auto-generated method stub
+		StorySelection.vacancy=true;
+		game=null;
+	}
+
+	public void keyPressed(KeyEvent k) {
+		/*
+		if(k.getKeyCode()==27 && game==null){
+			_root.menu.rise=true;
+		}*/
+	}
+
+}

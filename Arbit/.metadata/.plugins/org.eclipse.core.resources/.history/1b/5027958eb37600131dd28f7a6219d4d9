@@ -1,0 +1,102 @@
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.Rectangle;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+
+import javax.swing.ImageIcon;
+
+
+public class Variables {
+	Image pane = new ImageIcon("..//Data//variablePane.png").getImage();
+	int pane_width = pane.getWidth(null);
+	int pane_height = pane.getHeight(null);
+	createScreen _root;
+	int x;
+	int y;
+	Rectangle closeRect;
+	Rectangle confirmRect;
+	Functions funk = new Functions();
+	Vars vars[] = new Vars[8];
+	Fonts font = new Fonts();
+	public Variables(createScreen parent){
+		_root = parent;
+		x=(_root.stageWidth/2)-(pane_width/2);
+		y=(_root.stageHeight/2)-(pane_width/2);
+		closeRect = new Rectangle(422,106,30,30);
+		confirmRect = new Rectangle(390,106,30,30);
+		for(int i=0; i<vars.length; i++){
+			vars[i] = new Vars(x+15,y+34+(i*32),this);
+		}
+	}
+	
+	public void draw(Graphics stage) {
+		stage.drawImage(pane,x,y,null);
+		boolean noNoobs = true;
+		Vars focused = new Vars(0,0,this);
+		for(Vars var: vars){
+			var.draw(stage);
+			if(!var.newbie){
+				noNoobs=false;
+			}
+			if(var.focused){
+				focused=var;
+			}
+		}
+		if(focused.y>10){
+		focused.draw(stage);
+		}
+		if(!noNoobs){
+			font.setSize(12);
+			stage.setFont(font.regFont);
+			stage.drawString("Initial value", x+250, y+35);
+		}
+	}
+
+	public void mousePressed(MouseEvent m) {
+		int mouseX = m.getX();
+		int mouseY = m.getY();
+		if(funk.hitTest(closeRect,mouseX,mouseY)){
+			die();
+		}
+		if(funk.hitTest(confirmRect,mouseX,mouseY)){
+			die();
+			Object transfer[] = new Object[8];
+			for(int i=0;i<8;i++){
+				if(vars[i].type_str.equals("Boolean")){
+					funk.trace("theres a boolean:"+ vars[i].value_str);
+					transfer[i] = vars[i].value;
+				}else if(vars[i].type_str.equals("Number")){
+					funk.trace("Theres a number:"+vars[i].value_str);
+					transfer[i]=vars[i].value;
+				}else if(vars[i].type_str.equals("Text")){
+					funk.trace("Theres a string:"+vars[i].value_str);
+					transfer[i] = vars[i].value;
+				}else{
+					transfer[i]=null;
+				}
+			}
+		}
+		for(Vars var: vars){
+			var.mousePressed(m);
+		}
+	}
+	public void die(){
+		_root.vacancy=true;
+		_root.functionality=true;
+		_root.variables=null;
+	}
+
+	public void keyPressed(KeyEvent k) {
+		for(Vars var:vars){
+			var.keyPressed(k);
+		}
+	}
+
+	public void clearFocused() {
+		for(Vars var:vars){
+			var.focused=false;
+		}
+	}
+
+}

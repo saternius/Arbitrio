@@ -1,0 +1,4 @@
+INDEX VERSION 1.126+C:\Users\Joel\Desktop\junk\Arbit\.metadata\.plugins\org.eclipse.jdt.core
+1977364621.index
+1657330681.index
+4086903977.index

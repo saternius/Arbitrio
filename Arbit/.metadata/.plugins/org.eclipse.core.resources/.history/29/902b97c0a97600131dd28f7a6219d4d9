@@ -1,0 +1,46 @@
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Rectangle;
+import java.awt.Toolkit;
+import java.awt.event.KeyEvent;
+
+
+public class Functions {
+	public Functions(){
+	}
+	public void trace(String s){
+		System.out.println(s);
+	}
+	public boolean hitTest(Rectangle rect,int x, int y) {
+		return x>rect.x && x<rect.x+rect.width && y>rect.y && y<rect.y+rect.height;
+	}
+	public void fillRect(Rectangle rect, Graphics stage) {
+		stage.fillRect(rect.x,rect.y,rect.width,rect.height);
+	}
+	public String editString(KeyEvent k, String story, int max_length, Font font, String clearString){
+		
+		if(story.equals(clearString)){
+			story = "";
+		}
+		if (k.getKeyCode() == 8 && story.length() > 0) {
+            story = story.substring(0,
+                    story.length() - 1);
+        } else {
+        	FontMetrics fm = Toolkit.getDefaultToolkit().getFontMetrics(font);
+			int w = fm.stringWidth(story+k.getKeyChar());
+            if (((k.getKeyChar() >= 39 && k.getKeyChar() <= 122))
+                    && w < max_length && k.getKeyChar()!=' ') {
+                story += k.getKeyChar();
+            }
+            if(k.getKeyChar() == ' '){
+            	story+="_";
+            }
+            
+        }
+		if(story.equals("")){
+			return clearString;
+		}
+		return story;
+	}
+}

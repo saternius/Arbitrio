@@ -1,0 +1,98 @@
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.RenderingHints;
+
+
+
+
+public class MenuScreen {
+	public Buttons play_btn;
+	public Buttons create_btn;
+	public String position = "Console";
+	Image bg = Images.background;
+	Image Arbit = Images.Arbit;
+	Image Chibi = Images.menuChibi_1;
+	private Image internetFail = Images.connection_failure;
+	private Image connecting = Images.connecting_to_server;
+	public int xPos = 0;
+	public int yPos = 0;
+	public boolean fall=false;
+	public boolean rise=false;
+	public int yVel=-15;
+	public GameCanvas gc;
+	public int noConnect=0;
+	public boolean isConnecting=false;
+	private int wait=0;
+	public MenuScreen(GameCanvas gameCanvas){
+		play_btn = new Buttons(0,200,520,30,"Play Stories",null,null,null,-1);
+		create_btn =new Buttons(0,231,520,30,"Create Stories",null,null,null,-1);
+		this.gc=gameCanvas;
+    }
+    public void draw(Graphics g){
+    	if(fall){
+    		wait=0;
+    		if(yPos<610){
+    		yVel++;
+    		yPos+=yVel;
+    		}else{
+    			fall=false;
+    			yVel=0;
+    		}
+    	}
+    	if(rise){
+    		noConnect=-1;
+    		if(yPos>0){
+    			yVel=(0-yPos-20)/15;
+    			yPos+=yVel;
+    		}else{
+    			rise=false;
+    			yVel=0;
+    			gc.create=null;
+    			gc.playGame=null;
+    			play_btn.createFlag=true;
+    			create_btn.createFlag=true;
+    		}
+    	}
+    	//System.out.println("fall="+fall+" rise="+rise+" yVel="+yVel+"yPos="+yPos);
+    	//draws background
+    	for(int i2=0;i2<6;i2++){
+			for(int i=0;i<5;i++){
+				g.drawImage(bg, i*bg.getWidth(null)+xPos, i2*bg.getHeight(null)+yPos,null);
+			}
+		}
+    	
+    	g.drawImage(Arbit,55+xPos,50+yPos,null);
+    	
+    	g.setColor(Color.BLACK);
+		g.fillRect(0+xPos, 0+yPos, 520+xPos, 25+yPos);
+		g.setFont(new Font("Lucida Console", Font.BOLD, 15));
+		g.setColor(Color.WHITE);
+		if(g instanceof Graphics2D){
+			Graphics2D g2 = (Graphics2D)g;
+			g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+		}
+		g.drawString("Main Menu", 10+xPos, 17+yPos);
+		play_btn.draw(g,xPos,yPos);
+		create_btn.draw(g,xPos,yPos);
+		g.drawImage(Chibi,xPos,yPos+320,500,250,null);
+    	
+		if(isConnecting){
+    		g.drawImage(connecting,260-(396/2),310-26,null);
+    		wait++;
+    		if(wait>3){
+    		gc.playGame = new PlayGame(gc);
+    		isConnecting=false;
+    		}
+    	}
+	
+		if(noConnect>0 && yPos<=0){
+			noConnect--;
+			g.drawImage(internetFail,260-(396/2),310-26,null);
+		}
+    }
+
+
+}
